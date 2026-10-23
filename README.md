@@ -22,6 +22,7 @@ A list of classic games played in pubs and bars, grouped by type.
 | Pool (8-Ball) | 2 | Pot your group (spots/stripes or reds/yellows), then the black. |
 | 9-Ball | 2 | Pot balls in numerical order; potting the 9 legally wins. |
 | Killer Pool | 3+ | Each player has lives; lose one each time you fail to pot. |
+| Kelly Pool | 2+ | Each player secretly draws a numbered pea; the first to legally pot the ball matching their number wins. |
 | Snooker | 2 | Alternate reds and colours to build breaks, then clear the colours in order. |
 | Bar Billiards | 2+ | Pot balls into holes in the table while avoiding the mushroom-shaped skittles. |
 | Table Football (Foosball) | 2–4 | Spin rods to kick the ball into the opponent's goal. |
