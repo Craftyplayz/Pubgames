@@ -104,12 +104,12 @@
   }
 
   // Standard pool ball colours: 1–8 solids, 9–15 stripes of the same colours.
-  const BALL_COLORS = ['', '#f3c623', '#1d4fb8', '#d0342c', '#57308f', '#f07f1d', '#178049', '#7d1f2b', '#151515'];
+  const BALL_COLOURS = ['', '#f3c623', '#1d4fb8', '#d0342c', '#57308f', '#f07f1d', '#178049', '#7d1f2b', '#151515'];
 
   function ball(n, size = '', extra = '') {
-    const color = BALL_COLORS[n > 8 ? n - 8 : n];
-    return `<span class="ball ${n > 8 ? 'stripe' : 'solid'} ${size} ${extra}" style="--ball:${color}" aria-hidden="true">`
-      + `<span class="ball-num">${n}</span></span>`;
+    const colour = BALL_COLOURS[n > 8 ? n - 8 : n];
+    return `<span class="kp-ball ${n > 8 ? 'stripe' : 'solid'} ${size} ${extra}" style="--ball:${colour}" aria-hidden="true">`
+      + `<span class="kp-num">${n}</span></span>`;
   }
 
   // ---------- Game picker ----------
@@ -123,23 +123,23 @@
 
   function renderPicker() {
     catsEl.innerHTML = CATEGORIES.map((c) => (
-      `<button type="button" class="cat" data-cat="${esc(c.name)}" aria-pressed="${c.name === app.cat}">${esc(c.name)}</button>`
+      `<button type="button" class="${c.name === app.cat ? 'on' : ''}" data-cat="${esc(c.name)}" aria-pressed="${c.name === app.cat}">${esc(c.name)}</button>`
     )).join('');
     chipsEl.innerHTML = GAMES.filter((g) => g.cat === app.cat).map((g) => (
-      `<button type="button" class="chip" data-game="${g.id}" aria-pressed="${g.id === app.gameId}">${esc(g.name)}`
-      + `${TRACKERS[g.id] ? '<span class="chip-tag">Tracker</span>' : ''}</button>`
+      `<button type="button" class="${g.id === app.gameId ? 'on' : ''}" data-game="${g.id}" aria-pressed="${g.id === app.gameId}">${esc(g.name)}`
+      + `${TRACKERS[g.id] ? '<span class="badge b">Tracker</span>' : ''}</button>`
     )).join('');
-    const active = chipsEl.querySelector('[aria-pressed="true"]');
+    const active = chipsEl.querySelector('.on');
     if (active) chipsEl.scrollLeft = active.offsetLeft - chipsEl.offsetLeft - 16;
   }
 
   function renderGame() {
     const g = currentGame();
     gameEl.innerHTML = `
-      <div class="game-head">
-        <p class="eyebrow">${esc(g.cat)} · ${esc(playersLabel(g.players))}</p>
+      <div class="ph-title">
+        <p class="ph-meta">${esc(g.cat)} · ${esc(playersLabel(g.players))}</p>
         <h1>${esc(g.name)}</h1>
-        <p class="lede">${esc(g.desc)}</p>
+        <p class="muted">${esc(g.desc)}</p>
       </div>
       <div id="tracker"></div>`;
     const root = document.getElementById('tracker');
@@ -147,8 +147,9 @@
       TRACKERS[g.id](root);
     } else {
       root.innerHTML = `
-        <div class="card empty">
-          <p><strong>No tracker for ${esc(g.name)} yet.</strong> Kelly Pool has a full tracker with secret peas and a public scoreboard.</p>
+        <div class="card ph-empty">
+          <h3>No tracker yet</h3>
+          <p class="muted">${esc(g.name)} doesn't have a tracker. Kelly Pool has one, with secret peas and a public scoreboard.</p>
           <button type="button" class="btn" data-game="kelly-pool">Open Kelly Pool</button>
         </div>`;
     }
@@ -414,34 +415,34 @@
     const peaOptions = [1, 2, 3].filter((x) => x <= maxPeas())
       .map((x) => `<option value="${x}"${x === K.peas ? ' selected' : ''}>${x}</option>`).join('');
     return `
-      <div class="board">
+      <div class="kp-board">
         <section class="card">
-          <div class="card-top"><h2>New game</h2></div>
+          <h2>New game</h2>
           <p class="muted">Every player draws a secret pea numbered 1 to 15. Pot your own ball legally to win. If someone else pots it, you're out.</p>
-          <div class="field-label">Players <span class="muted">· shooting order, ${n} of ${MAX_PLAYERS}</span></div>
-          ${K.example ? '<p class="note">Example names. Replace them with your group.</p>' : ''}
-          <ol class="name-list">
+          <p class="kp-label">Players <span class="muted">· shooting order, ${n} of ${MAX_PLAYERS}</span></p>
+          ${K.example ? '<p class="kp-note">Example names. Replace them with your group.</p>' : ''}
+          <ol class="kp-names">
             ${K.names.map((nm, i) => `
               <li>
-                <span class="order">${i + 1}</span>
-                <input id="kp-name-${i}" class="input" type="text" value="${esc(nm)}" data-name="${i}" maxlength="20" placeholder="Player ${i + 1}" aria-label="Player ${i + 1} name" autocomplete="off">
-                <button type="button" class="icon-btn" data-act="remove" data-i="${i}" aria-label="Remove ${esc(nm || `player ${i + 1}`)}"${n <= 2 ? ' disabled' : ''}>×</button>
+                <span class="kp-order">${i + 1}</span>
+                <label for="kp-name-${i}"><input id="kp-name-${i}" class="field" type="text" value="${esc(nm)}" data-name="${i}" maxlength="20" placeholder="Player ${i + 1}" aria-label="Player ${i + 1} name" autocomplete="off"></label>
+                <button type="button" class="btn small kp-x" data-act="remove" data-i="${i}" aria-label="Remove ${esc(nm || `player ${i + 1}`)}"${n <= 2 ? ' disabled' : ''}>×</button>
               </li>`).join('')}
           </ol>
-          <div class="row">
-            <button type="button" class="btn ghost" data-act="add"${n >= MAX_PLAYERS ? ' disabled' : ''}>Add player</button>
-            <button type="button" class="btn ghost" data-act="shuffle">Shuffle order</button>
+          <div class="kp-row">
+            <button type="button" class="btn small" data-act="add"${n >= MAX_PLAYERS ? ' disabled' : ''}>Add player</button>
+            <button type="button" class="btn small" data-act="shuffle">Shuffle order</button>
           </div>
-          <div class="options">
-            <label class="opt" for="kp-peas">Peas each <select id="kp-peas" class="input">${peaOptions}</select></label>
-            <label class="opt" for="kp-usepin"><input type="checkbox" id="kp-usepin"${K.usePin ? ' checked' : ''}> Lock each pea with a 4-digit PIN</label>
+          <div class="kp-options">
+            <label class="kp-opt" for="kp-peas">Peas each <select id="kp-peas" class="field">${peaOptions}</select></label>
+            <label class="kp-opt" for="kp-usepin"><input type="checkbox" id="kp-usepin"${K.usePin ? ' checked' : ''}> Lock each pea with a 4-digit PIN</label>
           </div>
-          <div class="row"><button type="button" class="btn primary big" data-act="deal">Draw the peas</button></div>
+          <div class="kp-row"><button type="button" class="btn primary" data-act="deal">Draw peas</button></div>
         </section>
-        <section class="card who">
+        <section class="card">
           <h3>Who sees what</h3>
-          <div class="who-block">
-            <span><span class="vis public">Public</span></span>
+          <div class="kp-who">
+            <span><span class="badge b">Public</span></span>
             <ul>
               <li>Shooting order and whose turn it is</li>
               <li>Which balls are down, and who potted each</li>
@@ -449,16 +450,16 @@
               <li>The game log</li>
             </ul>
           </div>
-          <div class="who-block">
-            <span><span class="vis private">Private</span></span>
+          <div class="kp-who">
+            <span><span class="badge p">Private</span></span>
             <ul>
               <li>Your pea number, shown only after a hand-off screen</li>
               <li>Locked with your PIN if the table chooses</li>
               <li>Hides itself after ${PEEK_SECONDS} seconds</li>
             </ul>
           </div>
-          <h3>House rules used</h3>
-          <ol class="rules">
+          <h3>House rules</h3>
+          <ol class="kp-rules">
             <li>Shoot in order. Hit the lowest-numbered ball first.</li>
             <li>After a legal pot, keep shooting. After a miss, the turn passes.</li>
             <li>A ball potted on a foul goes back on the spot and the turn passes.</li>
@@ -470,35 +471,41 @@
       </div>`;
   }
 
+  function pinField(id, label) {
+    const invalid = Boolean(view.error);
+    return `
+      <label for="${id}">${label}
+        <input id="${id}" class="field kp-pin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off"${invalid ? ' aria-invalid="true"' : ''} data-focus>
+        ${invalid ? `<small class="err">${esc(view.error)}</small>` : ''}
+      </label>`;
+  }
+
   function dealHTML() {
     const p = K.players[K.dealIndex];
     const progress = `Drawing peas · ${K.dealIndex + 1} of ${K.players.length}`;
     if (K.dealStage === 'handoff') {
       return `
-        <section class="card handoff">
-          <div class="secret">
-            <p class="eyebrow">${progress}</p>
+        <section class="card kp-handoff">
+          <div class="kp-secret">
+            <span class="badge p">${progress}</span>
             <h2>Pass the device to ${esc(p.name)}</h2>
             <p class="muted">Everyone else, look away.</p>
-            <button type="button" class="btn primary big" data-act="deal-show">I'm ${esc(p.name)}. Show my pea</button>
-            <button type="button" class="btn ghost" data-act="deal-cancel">Back to players</button>
+            <button type="button" class="btn primary" data-act="deal-show" data-focus>Show my pea</button>
+            <button type="button" class="btn small" data-act="deal-cancel">Back to players</button>
           </div>
         </section>`;
     }
     const one = p.balls.length === 1;
     return `
-      <section class="card handoff">
-        <form class="secret" data-form="deal-hide" autocomplete="off">
-          <p class="eyebrow">Only ${esc(p.name)} should see this</p>
-          <div class="ball-row">${p.balls.map((b) => ball(b, 'xl')).join('')}</div>
+      <section class="card kp-handoff">
+        <form class="kp-secret" data-form="deal-hide" autocomplete="off">
+          <span class="badge p">Only ${esc(p.name)} should see this</span>
+          <div class="kp-balls">${p.balls.map((b) => ball(b, 'xl')).join('')}</div>
           <p>Your ${one ? 'pea is' : 'peas are'} <strong>${p.balls.join(' and ')}</strong>.
             ${one ? `Pot the ${p.balls[0]} legally to win. If anyone else pots it, you're out.`
               : 'Pot any of them legally to win. If others pot all of them, you\'re out.'}</p>
-          ${K.usePin ? `
-            <label for="kp-pin-set" class="muted">Set a 4-digit PIN so only you can check it later</label>
-            <input id="kp-pin-set" class="input pin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" data-focus>
-            ${view.error ? `<p class="error">${esc(view.error)}</p>` : ''}` : ''}
-          <button type="submit" class="btn primary big">Hide and pass on</button>
+          ${K.usePin ? pinField('kp-pin-set', 'Set a 4-digit PIN so only you can check it later') : ''}
+          <button type="submit" class="btn primary">Hide and pass on</button>
         </form>
       </section>`;
   }
@@ -509,79 +516,80 @@
     const winner = over && K.winner !== null ? playerById(K.winner) : null;
 
     const status = over
-      ? `<section class="card banner win">
-          <p class="eyebrow">Game over</p>
+      ? `<section class="card kp-status win">
+          <span><span class="badge gold">Game over</span></span>
           <h2>${winner ? `${esc(winner.name)} wins` : 'No winner'}</h2>
           <p>${esc(K.winReason)}</p>
-          <div class="row">
+          <div class="kp-row">
             <button type="button" class="btn primary" data-act="again">Play again</button>
-            <button type="button" class="btn ghost" data-act="edit">Change players</button>
-            <button type="button" class="btn ghost" data-act="undo"${K.history.length ? '' : ' disabled'}>Undo last shot</button>
+            <button type="button" class="btn" data-act="edit">Change players</button>
+            <button type="button" class="btn" data-act="undo"${K.history.length ? '' : ' disabled'}>Undo last shot</button>
           </div>
         </section>`
-      : `<section class="card banner">
-          <div class="card-top"><p class="eyebrow">At the table</p><span class="vis public">Public</span></div>
-          <h2><span class="dot"></span>${esc(s.name)} to shoot</h2>
+      : `<section class="card kp-status">
+          <div class="kp-head"><span class="ph-meta">At the table</span><span class="badge b">Public</span></div>
+          <h2><span class="kp-dot"></span>${esc(s.name)} to shoot</h2>
           <p class="muted">Tap a ball when it drops. A legal pot keeps the shooter at the table.</p>
         </section>`;
 
     const rack = Array.from({ length: 15 }, (_, i) => i + 1).map((n) => {
       const pot = K.rack[n];
       const by = pot ? playerById(pot.by).name : '';
-      return `<button type="button" class="rack-slot${pot ? ' is-potted' : ''}${view.pending === n ? ' is-pending' : ''}"
+      return `<button type="button" class="kp-slot${pot ? ' is-potted' : ''}${view.pending === n ? ' on' : ''}"
           data-act="pot" data-n="${n}"${pot || over ? ' disabled' : ''}
           aria-label="Ball ${n}${pot ? `, potted by ${esc(by)}` : ', on the table'}">
-          ${ball(n)}<span class="slot-cap">${pot ? esc(by) : '&nbsp;'}</span>
+          ${ball(n)}<span class="kp-cap">${pot ? esc(by) : '&nbsp;'}</span>
         </button>`;
     }).join('');
 
     const pending = view.pending && !over ? `
-      <div class="pending" role="group" aria-label="Record the pot">
+      <div class="kp-pending" role="group" aria-label="Record the pot">
         <p>The <strong>${view.pending}</strong> dropped on ${esc(s.name)}'s shot. Was it legal?</p>
-        <div class="row">
-          <button type="button" class="btn primary" data-act="legal">Legal pot</button>
-          <button type="button" class="btn warn" data-act="foul">Foul, respot it</button>
-          <button type="button" class="btn ghost" data-act="cancel-pot">Cancel</button>
+        <div class="kp-row">
+          <button type="button" class="btn primary" data-act="legal">Record legal pot</button>
+          <button type="button" class="btn" data-act="foul">Respot as a foul</button>
+          <button type="button" class="btn" data-act="cancel-pot">Cancel</button>
         </div>
       </div>` : '';
 
     const tableCard = `
       <section class="card">
-        <div class="card-top"><h3>Balls</h3><span class="muted">${15 - Object.keys(K.rack).length} on the table</span></div>
-        <div class="rack" role="group" aria-label="Balls 1 to 15">${rack}</div>
+        <div class="kp-head"><h3>Balls</h3><span class="ph-meta">${15 - Object.keys(K.rack).length} on the table</span></div>
+        <div class="kp-rack" role="group" aria-label="Balls 1 to 15">${rack}</div>
         ${pending}
         ${over ? '' : `
-          <div class="split-row">
-            <button type="button" class="btn" data-act="miss">Miss · next player</button>
-            <button type="button" class="btn ghost" data-act="undo"${K.history.length ? '' : ' disabled'}>Undo</button>
+          <div class="kp-split">
+            <button type="button" class="btn" data-act="miss">Record a miss</button>
+            <button type="button" class="btn" data-act="undo"${K.history.length ? '' : ' disabled'}>Undo</button>
           </div>`}
       </section>`;
 
     const log = `
       <section class="card">
-        <div class="card-top"><h3>Game log</h3><span class="vis public">Public</span></div>
-        <ol class="log">${K.log.map((e) => `<li class="${e.kind}">${esc(e.text)}</li>`).join('')}</ol>
+        <div class="kp-head"><h3>Game log</h3><span class="badge b">Public</span></div>
+        <ol class="kp-log">${K.log.map((e) => `<li class="${e.kind}">${esc(e.text)}</li>`).join('')}</ol>
       </section>`;
 
     const players = `
       <section class="card">
-        <div class="card-top"><h3>Players</h3><span class="vis public">Public</span></div>
-        <ol class="players">
+        <div class="kp-head"><h3>Players</h3><span class="badge b">Public</span></div>
+        <ol class="kp-players">
           ${K.players.map((p, i) => {
             const reveal = over || p.out;
             let state = 'In';
-            let cls = '';
-            if (over && p.id === K.winner) { state = 'Winner'; cls = 'is-win'; }
-            else if (p.out) { state = 'Out'; cls = 'is-out'; }
-            else if (!over && i === K.turn) { state = 'Shooting'; cls = 'is-turn'; }
+            let badge = '';
+            let row = '';
+            if (over && p.id === K.winner) { state = 'Winner'; badge = 'gold'; }
+            else if (p.out) { state = 'Out'; badge = 'r'; row = 'is-out'; }
+            else if (!over && i === K.turn) { state = 'Shooting'; badge = 'b'; }
             const peas = p.balls.map((b) => (reveal
               ? ball(b, 'sm', K.rack[b] ? 'potted' : '')
-              : '<span class="pea-hidden" title="Secret pea">?</span>')).join('');
-            return `<li class="player ${cls}">
-                <span class="order">${i + 1}</span>
-                <span class="pname">${esc(p.name)}</span>
-                <span class="peas" aria-label="${reveal ? `Peas: ${p.balls.join(', ')}` : 'Peas hidden'}">${peas}</span>
-                <span class="pill ${cls}">${state}</span>
+              : '<span class="kp-hidden" title="Secret pea">?</span>')).join('');
+            return `<li class="${row}">
+                <span class="kp-order">${i + 1}</span>
+                <span class="kp-name" title="${esc(p.name)}">${esc(p.name)}</span>
+                <span class="kp-peas" aria-label="${reveal ? `Peas: ${p.balls.join(', ')}` : 'Peas hidden'}">${peas}</span>
+                <span class="badge ${badge}">${state}</span>
               </li>`;
           }).join('')}
         </ol>
@@ -589,20 +597,20 @@
 
     const privateCard = over ? '' : `
       <section class="card">
-        <div class="card-top"><h3>Check your pea</h3><span class="vis private">Private</span></div>
+        <div class="kp-head"><h3>Check your pea</h3><span class="badge p">Private</span></div>
         <p class="muted">Covers the screen and shows one player's pea${K.usePin ? ' after their PIN' : ''}.</p>
-        <div class="peek-list">
+        <div class="kp-tiles">
           ${inPlayers().map((p) => `<button type="button" class="btn" data-act="peek" data-id="${p.id}">${esc(p.name)}</button>`).join('')}
         </div>
-        <div class="row">
-          <button type="button" class="btn ghost danger" data-act="reset">${view.confirmReset ? 'Tap again to abandon this game' : 'Abandon game'}</button>
+        <div class="kp-row">
+          <button type="button" class="btn small" data-act="reset">${view.confirmReset ? 'Tap again to abandon this game' : 'Abandon game'}</button>
         </div>
       </section>`;
 
     return `
-      <div class="board">
-        <div class="col">${status}${tableCard}${log}</div>
-        <div class="col">${players}${privateCard}</div>
+      <div class="kp-board">
+        <div class="kp-col">${status}${tableCard}${log}</div>
+        <div class="kp-col">${players}${privateCard}</div>
       </div>`;
   }
 
@@ -612,30 +620,33 @@
     let body;
     if (view.peek.stage === 'handoff') {
       body = `
-        <p class="eyebrow">Private</p>
-        <h2 id="peek-title">Pass the device to ${esc(p.name)}</h2>
-        <p class="muted">Everyone else, look away.</p>
-        <button type="button" class="btn primary big" data-act="peek-next" data-focus>I'm ${esc(p.name)}</button>
-        <button type="button" class="btn ghost" data-act="peek-close">Cancel</button>`;
+        <div class="kp-secret">
+          <span class="badge p">Private</span>
+          <h2 id="kp-peek-title">Pass the device to ${esc(p.name)}</h2>
+          <p class="muted">Everyone else, look away.</p>
+          <button type="button" class="btn primary" data-act="peek-next" data-focus>Show my pea</button>
+          <button type="button" class="btn" data-act="peek-close">Cancel</button>
+        </div>`;
     } else if (view.peek.stage === 'pin') {
       body = `
-        <form data-form="unlock" autocomplete="off">
-          <p class="eyebrow">Private</p>
-          <h2 id="peek-title">${esc(p.name)}, enter your PIN</h2>
-          <input id="kp-pin-check" class="input pin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" aria-label="PIN" data-focus>
-          ${view.error ? `<p class="error">${esc(view.error)}</p>` : ''}
-          <button type="submit" class="btn primary big">Show my pea</button>
-          <button type="button" class="btn ghost" data-act="peek-close">Cancel</button>
+        <form class="kp-secret" data-form="unlock" autocomplete="off">
+          <span class="badge p">Private</span>
+          <h2 id="kp-peek-title">${esc(p.name)}, enter your PIN</h2>
+          ${pinField('kp-pin-check', 'Your 4-digit PIN')}
+          <button type="submit" class="btn primary">Show my pea</button>
+          <button type="button" class="btn" data-act="peek-close">Cancel</button>
         </form>`;
     } else {
       body = `
-        <p class="eyebrow">Only ${esc(p.name)} should see this</p>
-        <h2 id="peek-title">Your ${p.balls.length === 1 ? 'pea' : 'peas'}</h2>
-        <div class="ball-row">${p.balls.map((b) => ball(b, 'xl', K.rack[b] ? 'potted' : '')).join('')}</div>
-        <p class="muted">Hides automatically after ${PEEK_SECONDS} seconds.</p>
-        <button type="button" class="btn primary big" data-act="peek-close" data-focus>Hide</button>`;
+        <div class="kp-secret">
+          <span class="badge p">Only ${esc(p.name)} should see this</span>
+          <h2 id="kp-peek-title">Your ${p.balls.length === 1 ? 'pea' : 'peas'}</h2>
+          <div class="kp-balls">${p.balls.map((b) => ball(b, 'xl', K.rack[b] ? 'potted' : '')).join('')}</div>
+          <p class="muted">Hides automatically after ${PEEK_SECONDS} seconds.</p>
+          <button type="button" class="btn primary" data-act="peek-close" data-focus>Hide my pea</button>
+        </div>`;
     }
-    return `<div class="privacy" role="dialog" aria-modal="true" aria-labelledby="peek-title"><div class="secret">${body}</div></div>`;
+    return `<dialog class="kp-privacy" aria-labelledby="kp-peek-title">${body}</dialog>`;
   }
 
   function kRender() {
@@ -645,6 +656,12 @@
     else if (K.phase === 'deal') html = dealHTML();
     else html = tableHTML();
     kRoot.innerHTML = html + peekHTML();
+    const dialog = kRoot.querySelector('dialog.kp-privacy');
+    if (dialog) {
+      // Esc closes the private screen; keep our state in step with the dialog.
+      dialog.addEventListener('cancel', (e) => { e.preventDefault(); closePeek(); kRender(); });
+      try { dialog.showModal(); } catch (e) { dialog.setAttribute('open', ''); }
+    }
     const focus = kRoot.querySelector('[data-focus]');
     if (focus) focus.focus();
   }
@@ -685,10 +702,6 @@
     const t = e.target;
     if (t.id === 'kp-peas') { K.peas = Number(t.value); saveKelly(); }
     if (t.id === 'kp-usepin') { K.usePin = t.checked; saveKelly(); }
-  });
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && view.peek) { closePeek(); kRender(); }
   });
 
   // ---------- Boot ----------

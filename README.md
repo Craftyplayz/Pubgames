@@ -4,7 +4,7 @@ A list of classic games played in pubs and bars, grouped by type.
 
 ## Web page
 
-Open `index.html` in a browser (no build step). The bar at the top picks a game by type.
+Open `index.html` in a browser (no build step). Styling follows the Crafty Playz design guide (craftyplayz.com/design). The bar at the top picks a game by type.
 Kelly Pool has a pass-and-play tracker:
 
 - **Public:** shooting order, whose turn it is, which balls are down and who potted them,
