@@ -2,6 +2,19 @@
 
 A list of classic games played in pubs and bars, grouped by type.
 
+## Web page
+
+Open `index.html` in a browser (no build step). The bar at the top picks a game by type.
+Kelly Pool has a pass-and-play tracker:
+
+- **Public:** shooting order, whose turn it is, which balls are down and who potted them,
+  who is out (their pea is revealed), and a game log.
+- **Private:** each player's pea. It's shown only behind a hand-off screen, can be locked
+  with a 4-digit PIN, and hides itself after 15 seconds.
+
+Game state is saved in the browser's local storage, so a refresh doesn't lose the game.
+The PIN keeps honest players honest; it isn't real security.
+
 ## Darts & Throwing Games
 
 | Game | Players | Description |
